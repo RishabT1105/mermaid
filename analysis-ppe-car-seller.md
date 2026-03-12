@@ -1,6 +1,26 @@
 # Analysis: Kőszegi-Rabin (2006) PPE — Second-Hand Car Seller
 
-## Question
+## Follow-up: Is Part 3 right as well?
+
+**No, Part (iii) is ❌ NOT correct.** It contains two errors:
+
+1. **The proof method is invalid:** The step μ(v − p') = μ(v) + μ(−p') uses a property (additivity) that **does not hold** for the piecewise-linear loss-aversion function μ. The function μ is only "linear" within each piece (gains or losses separately), not additive across the kink at zero. Since v > 0 and −p' < 0, these arguments have opposite signs, and additivity fails.
+
+2. **The claimed result is false:** Under the assumed "always sell" reference, U\_sell(v) ≠ U\_no-sell in general. Direct computation gives:
+   - U\_sell(v) = v + ηΔ(1−λ)/4
+   - U\_no-sell = v + ηv(1−λ)
+   - Difference = η(λ−1)(Δ − 4v)/4 ≠ 0 in general
+
+**Numerical example:** With v = 10, Δ = 5 (p̲ = 5, p̄ = 15), η = 1, λ = 2:
+- U\_sell(10) = 10 + 1·5·(1−2)/4 = **8.75**
+- U\_no-sell = 10 + 1·10·(1−2) = **0**
+- These are clearly not equal (**8.75 ≠ 0**)
+
+See [Part (iii) Detailed Analysis](#part-iii--wrong-both-method-and-result) below for the full explanation with counterexamples and the correct approach.
+
+---
+
+## Original Question
 
 > Given this question, except for Part 3, is the answer correct? If not, can you pinpoint exact steps and methods where we went wrong?
 
@@ -63,12 +83,22 @@ The student writes: μ(v − p') = μ(v + (−p')) = μ(v) + μ(−p')
 
 $$\mu(x) = \begin{cases} \eta x & \text{if } x \geq 0 \\ \eta\lambda x & \text{if } x < 0 \end{cases}$$
 
-This is **piecewise linear** (linear within each piece, no curvature), but it is **NOT additive** across the kink at zero. The property μ(a + b) = μ(a) + μ(b) fails when a and b have different signs.
+This is **piecewise linear** (linear within each piece, no curvature), but it is **NOT additive** across the kink at zero. The property μ(a + b) = μ(a) + μ(b) fails when a and b have different signs. Here a = v > 0 and b = −p' < 0 always have opposite signs, so this property cannot be used.
 
-**Counterexample:** Let a = v > 0 and b = −p' < 0 where v > p' > 0 (so a + b > 0):
-- μ(v − p') = η(v − p') (since v − p' > 0)
-- μ(v) + μ(−p') = ηv + ηλ(−p') = ηv − ηλp'
-- These differ by ηp'(λ − 1) ≠ 0 since λ > 1
+**Why it fails — the key intuition:** The loss-aversion kink at zero means losses are weighted by λ > 1 relative to gains. Splitting v − p' into μ(v) + μ(−p') applies the loss multiplier λ to the full −p' term, but the correct computation should only apply λ to the portion of v − p' that is actually negative (if any).
+
+**Counterexample 1:** Let v = 10, p' = 3 (so v − p' = 7 > 0, a gain):
+- μ(v − p') = μ(7) = 7η
+- μ(v) + μ(−p') = μ(10) + μ(−3) = 10η + (−3ηλ) = η(10 − 3λ)
+- For λ = 2: correct value = 7η, but student's method gives η(10 − 6) = 4η ≠ 7η ❌
+
+**Counterexample 2:** Let v = 10, p' = 12 (so v − p' = −2 < 0, a loss):
+- μ(v − p') = μ(−2) = −2ηλ
+- μ(v) + μ(−p') = μ(10) + μ(−12) = 10η + (−12ηλ) = η(10 − 12λ)
+- For λ = 2: correct value = −4η, but student's method gives η(10 − 24) = −14η ≠ −4η ❌
+
+**General formula for the error:**
+μ(v) + μ(−p') − μ(v − p') = ηp'(λ − 1) when v > p' (gain case), and = −ηv(λ − 1) when v < p' (loss case). Since λ > 1, the error is always nonzero.
 
 #### Error 2: The result U\_sell(v) = U\_no-sell does NOT hold under the "always sell" reference
 
@@ -84,9 +114,17 @@ $$U_{\text{no-sell}} = v + \eta v(1 - \lambda)$$
 
 **The difference is:**
 
-$$U_{\text{sell}}(v) - U_{\text{no-sell}} = \frac{\eta(1 - \lambda)(\Delta - 4v)}{4}$$
+$$U_{\text{sell}}(v) - U_{\text{no-sell}} = \frac{\eta(\lambda - 1)(\Delta - 4v)}{4}$$
 
 These are equal **only when Δ = 4v**, which is not true in general. Under the "always sell" reference, U\_sell(v) ≠ U\_no-sell for arbitrary price spreads.
+
+**Numerical verification:**
+
+| Parameters | U\_sell(v) | U\_no-sell | Equal? |
+|-----------|-----------|-----------|--------|
+| v=10, Δ=5, η=1, λ=2 | **8.75** | **0** | ❌ No |
+| v=5, Δ=3, η=0.5, λ=3 | **4.25** | **0** | ❌ No |
+| v=5, Δ=20, η=1, λ=2 (special: Δ=4v) | **0** | **0** | ✅ Yes (special case only) |
 
 ---
 
