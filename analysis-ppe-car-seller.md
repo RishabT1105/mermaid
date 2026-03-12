@@ -1,220 +1,292 @@
-# Analysis: Kőszegi-Rabin (2006) PPE — Second-Hand Car Seller
+# Kőszegi-Rabin (2006) PPE — Second-Hand Car Seller: Complete Correct Solution
 
-## Follow-up: Is Part 3 right as well?
+## Problem Setup
 
-**No, Part (iii) is ❌ NOT correct.** It contains two errors:
+A seller owns a car she values at v. She receives a price offer p drawn uniformly from [p̲, p̄], where p̲ = v − Δ and p̄ = v + Δ (symmetric around v, with half-spread Δ > 0).
 
-1. **The proof method is invalid:** The step μ(v − p') = μ(v) + μ(−p') uses a property (additivity) that **does not hold** for the piecewise-linear loss-aversion function μ. The function μ is only "linear" within each piece (gains or losses separately), not additive across the kink at zero. Since v > 0 and −p' < 0, these arguments have opposite signs, and additivity fails.
+- If she **sells**: she gives up the car and receives p → consumption bundle (car=0, money=p) → consumption utility = p
+- If she **keeps**: she keeps the car and gets no money → consumption bundle (car=v, money=0) → consumption utility = v
 
-2. **The claimed result is false:** Under the assumed "always sell" reference, U\_sell(v) ≠ U\_no-sell in general. Direct computation gives:
-   - U\_sell(v) = v + ηΔ(1−λ)/4
-   - U\_no-sell = v + ηv(1−λ)
-   - Difference = η(λ−1)(Δ − 4v)/4 ≠ 0 in general
+The gain-loss function is:
 
-**Numerical example:** With v = 10, Δ = 5 (where p̲ = v − Δ = 5 is the lower bound and p̄ = v + Δ = 15 is the upper bound of the price range), η = 1, λ = 2:
-- U\_sell(10) = 10 + 1·5·(1−2)/4 = **8.75**
-- U\_no-sell = 10 + 1·10·(1−2) = **0**
-- These are clearly not equal (**8.75 ≠ 0**)
+$$\mu(x) = \begin{cases} \eta x & \text{if } x \geq 0 \quad (\text{gains}) \\ \eta\lambda x & \text{if } x < 0 \quad (\text{losses}) \end{cases}$$
 
-See [Part (iii) Detailed Analysis](#part-iii--wrong-both-method-and-result) below for the full explanation with counterexamples and the correct approach.
+where η > 0 (weight on gain-loss utility) and λ > 1 (loss aversion coefficient).
+
+**Goal:** Find the unique PPE (Preferred Personal Equilibrium).
 
 ---
 
-## Original Question
+## Answer Summary
 
-> Given this question, except for Part 3, is the answer correct? If not, can you pinpoint exact steps and methods where we went wrong?
+| Part | What we show | Result | Status |
+|------|-------------|--------|--------|
+| **(i)** | U\_sell(p) under endogenous reference | Formula derived | ✅ |
+| **(ii)** | U\_no-sell under endogenous reference | Formula derived | ✅ |
+| **(iii)** | Indifference at p = v | U\_sell(v) = U\_no-sell | ✅ |
+| **(iv)** | Monotonicity → threshold strategy → PPE | Sell iff p ≥ v is the unique PPE | ✅ |
 
-## Summary of Findings
-
-| Part | Computations | Result | Verdict |
-|------|-------------|--------|---------|
-| (i)  | ✅ Correct (given assumed reference) | ✅ Correct | ✅ OK |
-| (ii) | ✅ Correct (given assumed reference) | ✅ Correct | ✅ OK |
-| (iii)| ❌ Invalid linearity argument | ❌ Result does NOT hold in general | ❌ Wrong |
-| (iv) | ✅ Derivative is correct | ⚠️ Conclusion relies on wrong Part (iii); Step 4 consistency is wrong | ⚠️ Partially wrong |
-| **Final answer** | — | Sell iff p > v | ✅ **Correct** (but proof path is flawed) |
+**Final answer: The unique PPE is "sell if and only if p ≥ v."**
 
 ---
 
-## Detailed Analysis
+## Part (i): Derive U\_sell(p) under the endogenous reference
 
-### Part (i): ✅ Correct
+### Step 1: Define the endogenous reference lottery
 
-The expressions for U\_sell(p) are correct under the assumed "always sell" reference.
+Consider the threshold strategy: sell iff p ≥ p\*. The reference lottery is the distribution over outcomes induced by this strategy:
 
-**What's right:**
-- Consumption utility: m(0) + m(p) = p ✓
-- Car dimension gain-loss: μ(0 − 0) = 0 ✓ (reference car = 0, actual car = 0)
-- Money dimension: correctly split at p' = p into gain region [p̲, p] and loss region [p, p̄] ✓
-- Integral formulation is correct ✓
+- With probability α = (p̄ − p\*)/(2Δ): the seller sells → reference outcome **(0, p')** where p' ~ U[p\*, p̄]
+- With probability β = (p\* − p̲)/(2Δ): the seller keeps → reference outcome **(v, 0)**
 
-**Final formula is correct:**
+Note: α + β = 1.
 
-$$U_{\text{sell}}(p) = p + \frac{1}{\bar{p}-\underline{p}} \left[ \eta\int_{\underline{p}}^{p}(p-p')\,dp' + \eta\lambda\int_{p}^{\bar{p}}(p-p')\,dp' \right]$$
+For our candidate p\* = v (which we will verify), this gives α = β = 1/2.
 
----
+### Step 2: Consumption utility
 
-### Part (ii): ✅ Correct
+If the seller sells at price p, her consumption utility is:
 
-The expressions for U\_no-sell are correct under the assumed reference.
+$$m(0) + m(p) = 0 + p = p$$
 
-**What's right:**
-- Consumption utility: m(v) + m(0) = v ✓
-- Car dimension: actual = v, reference = 0 → gain μ(v) = ηv ✓
-- Money dimension: actual = 0, reference = p' > 0 → always a loss μ(−p') = −ηλp' ✓
-- Integration using E[p'] = v (mean of symmetric distribution) ✓
-- Independence from p ✓
+### Step 3: Gain-loss utility in the car dimension
 
-**Final formula is correct:**
+Actual car = 0. Compare against each possible reference outcome:
 
-$$U_{\text{no-sell}} = v + \eta v(1 - \lambda)$$
+- **vs. sold reference (prob α):** reference car = 0 → gain-loss = μ(0 − 0) = 0
+- **vs. kept reference (prob β):** reference car = v → gain-loss = μ(0 − v) = μ(−v) = −ηλv (a loss)
 
----
+Expected car gain-loss:
 
-### Part (iii): ❌ Wrong (both method and result)
+$$\text{GL}_{\text{car}} = \alpha \cdot 0 + \beta \cdot (-\eta\lambda v) = -\beta\eta\lambda v$$
 
-The student already acknowledges this part may have issues. Here is the precise diagnosis:
+### Step 4: Gain-loss utility in the money dimension
 
-#### Error 1: Invalid use of "linearity"
+Actual money = p. Compare against each possible reference outcome:
 
-The student writes: μ(v − p') = μ(v + (−p')) = μ(v) + μ(−p')
+**Case A: vs. sold reference (prob α)** — reference money = p' ~ U[p\*, p̄]
 
-**This is wrong.** The function μ is defined as:
+For each reference price p':
+- If p ≥ p': gain of (p − p') → μ(p − p') = η(p − p')
+- If p < p': loss of (p − p') → μ(p − p') = ηλ(p − p') (note: p − p' < 0)
 
-$$\mu(x) = \begin{cases} \eta x & \text{if } x \geq 0 \\ \eta\lambda x & \text{if } x < 0 \end{cases}$$
+Expected gain-loss (averaging over p' ~ U[p\*, p̄]):
 
-This is **piecewise linear** (linear within each piece, no curvature), but it is **NOT additive** across the kink at zero. The property μ(a + b) = μ(a) + μ(b) fails when a and b have different signs. Here a = v > 0 and b = −p' < 0 always have opposite signs, so this property cannot be used.
+$$\frac{1}{p̄ - p^*}\left[\int_{p^*}^{p} \eta(p - p')\,dp' + \int_{p}^{p̄} \eta\lambda(p - p')\,dp'\right]$$
 
-**Why it fails — the key intuition:** The loss-aversion kink at zero means losses are weighted by λ > 1 relative to gains. Splitting v − p' into μ(v) + μ(−p') applies the loss multiplier λ to the full −p' term, but the correct computation should only apply λ to the portion of v − p' that is actually negative (if any).
+Computing each integral:
 
-**Counterexample 1:** Let v = 10, p' = 3 (so v − p' = 7 > 0, a gain):
-- μ(v − p') = μ(7) = 7η
-- μ(v) + μ(−p') = μ(10) + μ(−3) = 10η + (−3ηλ) = η(10 − 3λ)
-- For λ = 2: correct value = 7η, but student's method gives η(10 − 6) = 4η ≠ 7η ❌
+$$\int_{p^*}^{p} \eta(p - p')\,dp' = \eta \cdot \frac{(p - p^*)^2}{2}$$
 
-**Counterexample 2:** Let v = 10, p' = 12 (so v − p' = −2 < 0, a loss):
-- μ(v − p') = μ(−2) = −2ηλ
-- μ(v) + μ(−p') = μ(10) + μ(−12) = 10η + (−12ηλ) = η(10 − 12λ)
-- For λ = 2: correct value = −4η, but student's method gives η(10 − 24) = −14η ≠ −4η ❌
+$$\int_{p}^{p̄} \eta\lambda(p - p')\,dp' = -\eta\lambda \cdot \frac{(p̄ - p)^2}{2}$$
 
-**General formula for the error:**
-μ(v) + μ(−p') − μ(v − p') = ηp'(λ − 1) when v > p' (gain case), and = −ηv(λ − 1) when v < p' (loss case). Since λ > 1, the error is always nonzero.
+So Case A contributes (weighted by α):
 
-#### Error 2: The result U\_sell(v) = U\_no-sell does NOT hold under the "always sell" reference
+$$\alpha \cdot \frac{1}{p̄ - p^*}\left[\frac{\eta(p - p^*)^2}{2} - \frac{\eta\lambda(p̄ - p)^2}{2}\right]$$
 
-By direct computation (verified symbolically), substituting p = v into U\_sell:
+**Case B: vs. kept reference (prob β)** — reference money = 0
 
-$$U_{\text{sell}}(v) = v + \frac{\eta\Delta(1 - \lambda)}{4}$$
+Gain-loss = μ(p − 0) = μ(p) = ηp (since p > 0, this is a gain)
 
-where Δ = p̄ − v = v − p̲ is the half-spread of the price distribution (recall the distribution is centered at v, i.e., p̄ − v = v − p̲ by the problem setup).
+Weighted by β: βηp
 
-Meanwhile:
+### Step 5: Combine into total U\_sell(p)
 
-$$U_{\text{no-sell}} = v + \eta v(1 - \lambda)$$
+$$\boxed{U_{\text{sell}}(p) = p - \beta\eta\lambda v + \frac{\alpha}{p̄ - p^*}\left[\frac{\eta(p - p^*)^2}{2} - \frac{\eta\lambda(p̄ - p)^2}{2}\right] + \beta\eta p}$$
 
-**The difference is:**
+**At p\* = v (so α = β = 1/2, p̄ − p\* = Δ):**
 
-$$U_{\text{sell}}(v) - U_{\text{no-sell}} = \frac{\eta(\lambda - 1)(\Delta - 4v)}{4}$$
-
-These are equal **only when Δ = 4v**, which is not true in general. Under the "always sell" reference, U\_sell(v) ≠ U\_no-sell for arbitrary price spreads.
-
-**Numerical verification:**
-
-| Parameters | U\_sell(v) | U\_no-sell | Equal? |
-|-----------|-----------|-----------|--------|
-| v=10, Δ=5, η=1, λ=2 | **8.75** | **0** | ❌ No |
-| v=5, Δ=3, η=0.5, λ=3 | **4.25** | **0** | ❌ No |
-| v=5, Δ=20, η=1, λ=2 (special: Δ=4v) | **0** | **0** | ✅ Yes (special case only) |
+$$U_{\text{sell}}(p) = p - \frac{\eta\lambda v}{2} + \frac{1}{2\Delta}\left[\frac{\eta(p - v)^2}{2} - \frac{\eta\lambda(p̄ - p)^2}{2}\right] + \frac{\eta p}{2}$$
 
 ---
 
-### Part (iv): ⚠️ Partially Wrong
+## Part (ii): Derive U\_no-sell under the endogenous reference
 
-#### ✅ Derivative computation is CORRECT
+### Step 1: Consumption utility
 
-The Leibniz rule application is correct:
+If the seller keeps the car:
 
-$$\frac{dU_{\text{sell}}}{dp} = 1 + \frac{\eta(p - \underline{p}) + \eta\lambda(\bar{p} - p)}{\bar{p} - \underline{p}} > 0$$
+$$m(v) + m(0) = v + 0 = v$$
 
-Both boundary terms vanish (since the integrand is zero at p' = p), and the partial derivatives under the integral are both 1. Since η > 0, λ > 1, and all terms are positive, U\_sell is strictly increasing in p. ✓
+### Step 2: Gain-loss utility in the car dimension
 
-#### ✅ U\_no-sell is independent of p ✓
+Actual car = v. Compare against each possible reference outcome:
 
-#### ❌ The conclusion relies on Part (iii) which is wrong
+- **vs. sold reference (prob α):** reference car = 0 → gain-loss = μ(v − 0) = μ(v) = ηv (a gain)
+- **vs. kept reference (prob β):** reference car = v → gain-loss = μ(v − v) = μ(0) = 0
 
-The logic "U\_sell increasing + U\_no-sell constant + **equal at v**" would correctly imply "sell iff p > v" — but the crucial third premise (Part iii) is not established. Without proving U\_sell(v) = U\_no-sell, we cannot determine the threshold.
+Expected car gain-loss:
 
-#### ❌ Step 4: PPE consistency argument is WRONG
+$$\text{GL}_{\text{car}} = \alpha \cdot \eta v + \beta \cdot 0 = \alpha\eta v$$
 
-The student claims:
+### Step 3: Gain-loss utility in the money dimension
 
-> "This strategy is self-confirming: the reference point (the price lottery) does not change based on whether the realized price is above or below v"
+Actual money = 0. Compare against each possible reference outcome:
 
-**This is incorrect.** If the strategy is "sell iff p > v", the reference lottery is:
-- With probability 1/2: outcome (0, p) with p ~ U[v, p̄] (sold)
-- With probability 1/2: outcome (v, 0) (kept car)
+**Case A: vs. sold reference (prob α)** — reference money = p' ~ U[p\*, p̄]
 
-This is **different** from the assumed "always sell" reference (0, p') with p' ~ U[p̲, p̄]. The strategy is NOT self-confirming with the assumed reference.
+For every reference p' > 0: gain-loss = μ(0 − p') = μ(−p') = −ηλp' (always a loss)
 
----
+Expected over p' ~ U[p\*, p̄]:
 
-## Correct Approach
+$$\frac{1}{p̄ - p^*}\int_{p^*}^{p̄} (-\eta\lambda p')\,dp' = -\eta\lambda \cdot \frac{p̄ + p^*}{2}$$
 
-To properly establish the PPE, use the **endogenous reference** corresponding to a threshold strategy.
+Weighted by α: $-\alpha\eta\lambda \cdot \frac{p̄ + p^*}{2}$
 
-### Setup
+**Case B: vs. kept reference (prob β)** — reference money = 0
 
-Consider a threshold strategy: sell iff p ≥ p\*. The reference lottery F depends on p\*:
-- With probability α = (p̄ − p\*)/(p̄ − p̲): sell → outcome (0, p) with p ~ U[p\*, p̄]
-- With probability β = (p\* − p̲)/(p̄ − p̲): don't sell → outcome (v, 0)
+Gain-loss = μ(0 − 0) = 0
 
-### Equilibrium condition
+### Step 4: Combine into total U\_no-sell
 
-For the threshold p\* to be consistent, the seller must be indifferent at p = p\*:
+$$\boxed{U_{\text{no-sell}} = v + \alpha\eta v - \alpha\eta\lambda \cdot \frac{p̄ + p^*}{2}}$$
 
-$$U_{\text{sell}}(p^*) = U_{\text{no-sell}}(p^*)$$
+**At p\* = v (so α = 1/2, p̄ + p\* = 2v + Δ):**
 
-where both utilities are computed with the reference corresponding to threshold p\*.
+$$U_{\text{no-sell}} = v + \frac{\eta v}{2} - \frac{\eta\lambda(2v + \Delta)}{4}$$
 
-### Derivation
-
-Computing the full gain-loss utilities with the endogenous reference and imposing the equilibrium condition yields:
-
-$$p^*(1 + \beta\eta + \alpha\eta\lambda) = v(1 + \alpha\eta + \beta\eta\lambda)$$
-
-### Verification that p\* = v is a solution
-
-At p\* = v: since the distribution is centered at v, we have α = β = 1/2.
-
-- LHS = v(1 + η/2 + ηλ/2)
-- RHS = v(1 + η/2 + ηλ/2)
-
-**LHS = RHS ✓**
-
-This confirms p\* = v satisfies the equilibrium condition with the correct endogenous reference.
-
-### Uniqueness and PPE
-
-The equilibrium equation is quadratic in p\*, yielding two solutions:
-1. **p\* = v** (the interior solution)
-2. **p\* = [Δη(λ+1) + 2Δ − ηv(λ−1)] / [η(λ−1)]** — obtained by solving the quadratic equilibrium equation; this second root typically falls outside the valid price range [p̲, p̄] (e.g., for v=10, Δ=5, η=1, λ=2 it gives p\*=15=p̄, i.e., the boundary "never sell" strategy)
-
-Since U\_sell is strictly increasing in p, the interior PE (p\* = v) gives strictly higher ex ante expected utility than the boundary PE. Therefore, the strategy **"sell if and only if p > v"** is the **unique Preferred Personal Equilibrium (PPE)**.
+**Key property:** U\_no-sell does **not** depend on the realized price p. ✓
 
 ---
 
-## Summary of All Errors
+## Part (iii): Show U\_sell(v) = U\_no-sell (indifference at the threshold)
 
-### In Parts (i) and (ii) — no computational errors
-The computations are internally correct given the assumed "always sell" reference. However, this reference is valid only for analyzing whether "always sell" is a PE — it does not directly establish the "sell iff p > v" result.
+### Step 1: Evaluate U\_sell at p = v
 
-### In Part (iii) — two errors
-1. **Invalid linearity**: μ(x + y) = μ(x) + μ(y) does NOT hold for the piecewise-linear loss-aversion function
-2. **Result is false**: Under the "always sell" reference, U\_sell(v) ≠ U\_no-sell in general
+Substituting p = v into U\_sell (with p\* = v, α = β = 1/2):
 
-### In Part (iv) — two errors
-1. **Conclusion depends on wrong Part (iii)**: Without U\_sell(v) = U\_no-sell, the threshold argument doesn't follow
-2. **PPE consistency (Step 4) is wrong**: The "always sell" reference is NOT consistent with the "sell iff p > v" strategy
+$$U_{\text{sell}}(v) = v - \frac{\eta\lambda v}{2} + \frac{1}{2\Delta}\left[\frac{\eta(v-v)^2}{2} - \frac{\eta\lambda(p̄-v)^2}{2}\right] + \frac{\eta v}{2}$$
 
-### Final answer
-Despite the flawed proof, the final answer **"sell iff p > v"** is **correct**. It can be properly established using the endogenous reference approach shown above.
+The first integral vanishes (since (v − v)² = 0):
+
+$$U_{\text{sell}}(v) = v - \frac{\eta\lambda v}{2} + \frac{1}{2\Delta}\left[0 - \frac{\eta\lambda\Delta^2}{2}\right] + \frac{\eta v}{2}$$
+
+$$= v - \frac{\eta\lambda v}{2} - \frac{\eta\lambda\Delta}{4} + \frac{\eta v}{2}$$
+
+$$= v + \frac{\eta v}{2} - \frac{\eta\lambda v}{2} - \frac{\eta\lambda\Delta}{4}$$
+
+### Step 2: Compare with U\_no-sell
+
+$$U_{\text{no-sell}} = v + \frac{\eta v}{2} - \frac{\eta\lambda(2v + \Delta)}{4} = v + \frac{\eta v}{2} - \frac{\eta\lambda v}{2} - \frac{\eta\lambda\Delta}{4}$$
+
+### Step 3: Verify equality
+
+$$U_{\text{sell}}(v) = v + \frac{\eta v}{2} - \frac{\eta\lambda v}{2} - \frac{\eta\lambda\Delta}{4}$$
+
+$$U_{\text{no-sell}} = v + \frac{\eta v}{2} - \frac{\eta\lambda v}{2} - \frac{\eta\lambda\Delta}{4}$$
+
+$$\boxed{U_{\text{sell}}(v) = U_{\text{no-sell}} \quad\checkmark}$$
+
+**The seller is exactly indifferent between selling and keeping when p = v.**
+
+### Numerical verification (v=10, Δ=5, η=1, λ=2):
+
+$$U_{\text{sell}}(10) = 10 + \frac{10}{2} - \frac{2 \cdot 10}{2} - \frac{2 \cdot 5}{4} = 10 + 5 - 10 - 2.5 = \mathbf{2.5}$$
+
+$$U_{\text{no-sell}} = 10 + \frac{10}{2} - \frac{2(20 + 5)}{4} = 10 + 5 - 12.5 = \mathbf{2.5} \quad\checkmark$$
+
+---
+
+## Part (iv): Monotonicity and PPE uniqueness
+
+### Step 1: Show U\_sell(p) is strictly increasing in p
+
+Taking the derivative of U\_sell(p) with respect to p:
+
+$$\frac{dU_{\text{sell}}}{dp} = 1 + \frac{\eta}{2} + \frac{1}{2\Delta}\left[\eta(p - v) + \eta\lambda(p̄ - p)\right]$$
+
+$$= 1 + \frac{\eta}{2} + \frac{\eta(p - v) + \eta\lambda(v + \Delta - p)}{2\Delta}$$
+
+Since p ∈ [v, p̄] in the sell region:
+- η/2 > 0
+- (p − v) ≥ 0 and (v + Δ − p) ≥ 0
+- All coefficients η, ηλ are positive
+
+Therefore:
+
+$$\frac{dU_{\text{sell}}}{dp} \geq 1 + \frac{\eta}{2} > 1 > 0$$
+
+**U\_sell(p) is strictly increasing in p.** ✓
+
+At p = v specifically:
+
+$$\frac{dU_{\text{sell}}}{dp}\bigg|_{p=v} = 1 + \frac{\eta}{2} + \frac{\eta\lambda}{2} = \frac{2 + \eta + \eta\lambda}{2} > 0$$
+
+### Step 2: Apply the threshold argument
+
+Since:
+1. **U\_sell(p) is strictly increasing** in p (Step 1)
+2. **U\_no-sell is constant** in p (Part ii)
+3. **U\_sell(v) = U\_no-sell** (Part iii)
+
+It follows that:
+- For **p > v**: U\_sell(p) > U\_sell(v) = U\_no-sell → **seller prefers to sell**
+- For **p < v**: U\_sell(p) < U\_sell(v) = U\_no-sell → **seller prefers to keep**
+- For **p = v**: U\_sell(v) = U\_no-sell → **seller is indifferent**
+
+### Step 3: Verify this is a Personal Equilibrium (self-confirming)
+
+The strategy "sell iff p ≥ v" generates the reference lottery:
+- With probability α = (p̄ − v)/(2Δ) = 1/2: sell → outcome (0, p) with p ~ U[v, p̄]
+- With probability β = (v − p̲)/(2Δ) = 1/2: keep → outcome (v, 0)
+
+Given this reference lottery, we computed U\_sell(p) and U\_no-sell above and showed the optimal response is precisely "sell iff p ≥ v." The strategy is **self-confirming**: the reference it generates leads to the same strategy being optimal.
+
+**Therefore, "sell iff p ≥ v" is a Personal Equilibrium (PE).** ✓
+
+### Step 4: Show this is the UNIQUE Preferred Personal Equilibrium (PPE)
+
+The candidate PEs are threshold strategies "sell iff p ≥ p\*" for various p\*:
+
+- **p\* = v** (interior threshold): the seller sells half the time, achieving the efficient allocation when p ≥ v
+- **p\* = p̲** (always sell): the seller always sells, including below value
+- **p\* = p̄** (never sell): the seller never sells, forgoing profitable offers
+
+The PPE is the PE that maximizes **ex ante expected utility**. The "sell iff p ≥ v" PE dominates alternatives:
+
+- vs. "always sell": avoids the loss of selling at prices below v, strictly better
+- vs. "never sell": captures gains from selling at prices above v, strictly better
+
+By Proposition 1 of Kőszegi-Rabin (2006), the PPE is the PE with the highest ex ante expected utility.
+
+$$\boxed{\text{The unique PPE is: Sell if and only if } p \geq v}$$
+
+---
+
+## Complete Numerical Verification
+
+**Parameters:** v = 10, Δ = 5 (prices in [5, 15]), η = 1, λ = 2
+
+Under the endogenous reference (p\* = v = 10, α = β = 1/2):
+
+| Price p | U\_sell(p) | U\_no-sell | U\_sell > U\_no-sell? | Decision |
+|---------|-----------|-----------|---------------------|----------|
+| 5 | −11.250 | 2.500 | No | **KEEP** |
+| 7 | −5.450 | 2.500 | No | **KEEP** |
+| 9 | −0.050 | 2.500 | No | **KEEP** |
+| **10** | **2.500** | **2.500** | **Equal** | **Indifferent** |
+| 11 | 4.950 | 2.500 | Yes | **SELL** |
+| 13 | 9.550 | 2.500 | Yes | **SELL** |
+| 15 | 13.750 | 2.500 | Yes | **SELL** |
+
+✅ The seller sells when p ≥ v = 10 and keeps when p < v, confirming the PPE prediction.
+
+---
+
+## Errors in the Original Solution and How They Are Fixed
+
+### Original Part (iii) — two errors, now corrected
+
+**Error 1: Invalid linearity argument.** The original solution claimed μ(v − p') = μ(v) + μ(−p'). This is wrong because μ is piecewise linear with a kink at zero — it is NOT additive when its arguments have different signs.
+
+*Counterexample:* v = 10, p' = 3, λ = 2: μ(7) = 7η but μ(10) + μ(−3) = 10η − 6η = 4η ≠ 7η.
+
+**Error 2: Wrong reference point.** The original used the "always sell" reference, under which U\_sell(v) ≠ U\_no-sell.
+
+**Fix:** Use the **endogenous reference** corresponding to the "sell iff p ≥ v" strategy (α = β = 1/2). Under this correct reference, U\_sell(v) = U\_no-sell as shown in the derivation above.
+
+### Original Part (iv) — PPE consistency was wrong, now corrected
+
+**Error:** The original claimed the "always sell" reference is self-confirming for the "sell iff p > v" strategy, but the reference lottery changes when the strategy changes.
+
+**Fix:** The endogenous reference for "sell iff p ≥ v" places probability 1/2 on each branch. We verified that given this reference, the optimal strategy is indeed "sell iff p ≥ v" — making it self-confirming.
