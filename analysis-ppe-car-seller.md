@@ -11,7 +11,7 @@
    - U\_no-sell = v + ηv(1−λ)
    - Difference = η(λ−1)(Δ − 4v)/4 ≠ 0 in general
 
-**Numerical example:** With v = 10, Δ = 5 (p̲ = 5, p̄ = 15), η = 1, λ = 2:
+**Numerical example:** With v = 10, Δ = 5 (where p̲ = v − Δ = 5 is the lower bound and p̄ = v + Δ = 15 is the upper bound of the price range), η = 1, λ = 2:
 - U\_sell(10) = 10 + 1·5·(1−2)/4 = **8.75**
 - U\_no-sell = 10 + 1·10·(1−2) = **0**
 - These are clearly not equal (**8.75 ≠ 0**)
@@ -106,7 +106,7 @@ By direct computation (verified symbolically), substituting p = v into U\_sell:
 
 $$U_{\text{sell}}(v) = v + \frac{\eta\Delta(1 - \lambda)}{4}$$
 
-where Δ = p̄ − v = v − p̲ (half-spread).
+where Δ = p̄ − v = v − p̲ is the half-spread of the price distribution (recall the distribution is centered at v, i.e., p̄ − v = v − p̲ by the problem setup).
 
 Meanwhile:
 
@@ -197,7 +197,7 @@ This confirms p\* = v satisfies the equilibrium condition with the correct endog
 
 The equilibrium equation is quadratic in p\*, yielding two solutions:
 1. **p\* = v** (the interior solution)
-2. **p\* = [Δη(λ+1) + 2Δ − ηv(λ−1)] / [η(λ−1)]** (typically outside the valid range [p̲, p̄] or at the boundary, corresponding to "never sell")
+2. **p\* = [Δη(λ+1) + 2Δ − ηv(λ−1)] / [η(λ−1)]** — obtained by solving the quadratic equilibrium equation; this second root typically falls outside the valid price range [p̲, p̄] (e.g., for v=10, Δ=5, η=1, λ=2 it gives p\*=15=p̄, i.e., the boundary "never sell" strategy)
 
 Since U\_sell is strictly increasing in p, the interior PE (p\* = v) gives strictly higher ex ante expected utility than the boundary PE. Therefore, the strategy **"sell if and only if p > v"** is the **unique Preferred Personal Equilibrium (PPE)**.
 
